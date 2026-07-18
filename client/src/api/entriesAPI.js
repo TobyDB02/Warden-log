@@ -1,11 +1,11 @@
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5050/api';
 
 async function handleResponse(res) {
     if (!res.ok) {
         const errorBody = await res.json().catch(() => ({}));
         throw new Error(errorBody.error || `Request failed with status ${res.status}`);
     }
-    if (!res.status === 204) return null;
+    if (res.status === 204) return null;
     return res.json();
 }
 
@@ -21,7 +21,7 @@ export async function getAllEntries(){
 
 export async function getEntryByStaffNumber(staffNumber) {
     const res = await fetch(`${API_BASE}/entries/${staffNumber}`);
-    if (resStatus === 404) return null;
+    if (res.status === 404) return null;
     return handleResponse(res)
 }
 

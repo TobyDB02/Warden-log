@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { getLocations, getEntryByStaffNumber, createEntry, updateEntry, deleteEntry } from '../api/entriesApi';
+import { getLocations, getEntryByStaffNumber, createEntry, updateEntry, deleteEntry } from '../api/entriesAPI';
 
 export default function EntryForm() {
-    const [locations, setLoacations] = useState([]);
+    const [locations, setLocations] = useState([]);
     const [staffNumber, setStaffNumber] = useState('');
     const [firstName, setFirstName] = useState('');
     const [surname, setSurname] = useState('');
@@ -12,8 +12,8 @@ export default function EntryForm() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        getLoactions()
-            .then(setLoactions)
+        getLocations()
+            .then(setLocations)
             .catch(() => setStatus({ type: 'error', message: 'Could not load locations' }));
     }, []);
 
@@ -27,20 +27,20 @@ export default function EntryForm() {
                 setFirstName(entry.firstName);
                 setSurname(entry.surname);
                 setLocation(entry.location);
-                setStatus({ type: 'info', message: 'Amend existing entry: ' + entry.name });
+                setStatus({ type: 'info', message: `Amend existing entry: ${entry.firstName} ${entry.surname}` });
             } else {
                 setExistingEntry(null);
                 setStatus({ type: 'info', message: 'Fill entry details: '});
             }
         } catch (error) {
-            setStatus({ type: 'error', message: err.message });
+            setStatus({ type: 'error', message: error.message });
         }
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
         if (!staffNumber || !firstName || !surname || !location) {
-            setStatus({ type: 'errir', message: 'Please enter fields:'})
+            setStatus({ type: 'error', message: 'Please enter fields:'})
             return
         }
 
@@ -51,7 +51,7 @@ export default function EntryForm() {
             if (existingEntry) {
                 const updated = await updateEntry(existingEntry.id, { firstName, surname, location});
                 setExistingEntry(updated);
-                setStatus({ trype: 'success', message: 'Your entry has been sucess' });
+                setStatus({ type: 'success', message: 'Your entry has been sucess' });
             } else {
                 const created = await createEntry({ staffNumber, firstName, surname, location });
                 setExistingEntry(created);
@@ -132,17 +132,17 @@ export default function EntryForm() {
                         >
                     <option value="">-- Select a location --</option>
                     {locations.map((location) => (
-                        <option key={location} value={location}></option>
+                        <option key={location} value={location}>{location}</option>
                     ))}
                     </select>
                 </div>
 
                 <div className="field-group">
                     <button type="submit" disabled={loading}>
-                        {existingEntry ? 'Update Location' : 'Record Loaction'}
+                        {existingEntry ? 'Update Location' : 'Record Location'}
                     </button>
                     {existingEntry && (
-                        <button type={"button"} onClick={handleSubmit} disabled={loading} className={"delete-btn"}>
+                        <button type={"button"} onClick={handleDelete} disabled={loading} className={"delete-btn"}>
                             Delete Entry
                         </button>
                     )}

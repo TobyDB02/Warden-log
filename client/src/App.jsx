@@ -7,7 +7,7 @@ import './App.css';
 export default function App() {
     const [view, setView] = useState('form');
 
-    retrun (
+    return (
         <div className="App">
             <header className="App-header">
                 <h1>University of Winchester</h1>
