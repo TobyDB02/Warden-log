@@ -1,0 +1,32 @@
+### Get all locations
+GET http://localhost:5050/api/locations
+
+### Get all entries
+GET http://localhost:5050/api/entries
+
+### Create a new entry
+POST http://localhost:5050/api/entries
+Content-Type: application/json
+
+{
+  "staffNumber": "S99999",
+  "firstName": "Test",
+  "surname": "User",
+  "location": "Winton Building"
+}
+
+### Get one entry by staff number
+GET http://localhost:5050/api/entries/S99999
+
+### Update an entry (replace 4 with the real id from the Create response)
+PUT http://localhost:5050/api/entries/5
+Content-Type: application/json
+
+{
+  "firstName": "Test",
+  "surname": "User",
+  "location": "The Stripe"
+}
+
+### Delete an entry (replace 4 with the real id)
+DELETE http://localhost:5050/api/entries/5

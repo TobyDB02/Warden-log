@@ -8,7 +8,7 @@ router.get('/locations', (req, res) => res.json(locations));
 
 router.post('/entries', controller.createEntry);
 router.get('/entries', controller.getAllEntries);
-router.get('/entries/:staffNumber', controller.getEntryByStaffNumber());
+router.get('/entries/:staffNumber', controller.getEntryByStaffNumber);
 router.put('/entries/:id', controller.updateEntry);
 router.delete('/entries/:id', controller.deleteEntry);
 

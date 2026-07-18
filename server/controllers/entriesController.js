@@ -1,11 +1,10 @@
 
 const entryQueries = require('../models/entryQueries');
-const entryQuries = require("./entriesController");
 
 exports.createEntry = async (req, res, next) => {
     try {
-        const {staffNumber, fistName, surname, location} = req.body;
-        if (!staffNumber || !fistName || !surname || !location) {
+        const {staffNumber, firstName, surname, location} = req.body;
+        if (!staffNumber || !firstName || !surname || !location) {
             return res.status(400).json({ error: 'Not all fields provided' });
         }
         const entry = await entryQueries.createEntry({staffNumber, firstName, surname, location});
@@ -17,7 +16,7 @@ exports.createEntry = async (req, res, next) => {
 
 exports.getAllEntries = async (req, res, next) => {
     try {
-        const entries = await entryQuries.getAllEntries();
+        const entries = await entryQueries.getAllEntries();
         res.json(entries);
     } catch (err) {
         next(err);
@@ -26,7 +25,7 @@ exports.getAllEntries = async (req, res, next) => {
 
 exports.getEntryByStaffNumber = async (req, res, next) => {
     try {
-        const entry = await entryQuries.getEntryByStaffNumber(req.params.staffNumber);
+        const entry = await entryQueries.getEntryByStaffNumber(req.params.staffNumber);
         if (!entry) return res.status(404).json({ error: 'Not found' });
         res.json(entry);
     } catch (err) {
@@ -46,7 +45,7 @@ exports.updateEntry = async (req, res, next) => {
 
 exports.deleteEntry = async (req, res, next) => {
     try{
-        await entryQuries.deleteEntry(req.params.id);
+        await entryQueries.deleteEntry(req.params.id);
         res.status(204).send();
     } catch (err) {
         next(err);
