@@ -1,0 +1,140 @@
+h1,
+h2 {
+    font-family: var(--font-heading);
+}
+
+.App-header h1,
+.App-header h2 {
+    color: var(--uow-white);
+}
+
+main h2 {
+    margin-top: 0;
+    color: var(--uow-purple);
+}
+
+.field-group {
+    margin-bottom: 1.25rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.4rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--uow-black);
+}
+
+input,
+select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--uow-cool-grey-1);
+    border-radius: 6px;
+}
+
+input:hover,
+select:hover {
+    border-color: var(--uow-cool-grey-2);
+}
+
+input:focus,
+select:focus {
+    border-color: var(--uow-purple);
+}
+
+button {
+    min-height: 44px;
+    padding: 0.7rem 1.2rem;
+    border: 2px solid var(--uow-purple);
+    border-radius: 6px;
+
+    font-weight: 700;
+    color: var(--uow-white);
+    background-color: var(--uow-purple);
+
+    cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+    color: var(--uow-purple);
+    background-color: var(--uow-white);
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.App-header nav button {
+    color: var(--uow-white);
+    background-color: transparent;
+    border-color: var(--uow-white);
+}
+
+.App-header nav button:hover:not(:disabled),
+.App-header nav button.active {
+    color: var(--uow-purple);
+    background-color: var(--uow-white);
+}
+
+.delete-btn {
+    margin-left: 0.75rem;
+    border-color: #b42318;
+    background-color: #b42318;
+}
+
+.delete-btn:hover:not(:disabled) {
+    color: #b42318;
+    background-color: var(--uow-white);
+}
+
+.status-message {
+    margin: 1rem 0 0;
+    padding: 0.85rem 1rem;
+    border-left: 4px solid var(--uow-blue);
+    border-radius: 6px;
+    text-align: left;
+    background-color: #eef7fb;
+}
+
+.status-message.success {
+    border-left-color: var(--uow-green);
+    background-color: #e9f6f5;
+}
+
+.status-message.error {
+    border-left-color: #b42318;
+    background-color: #fef3f2;
+}
+
+.status-message.info {
+    border-left-color: var(--uow-blue);
+    background-color: #eef7fb;
+}
+
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    padding: 0.8rem;
+    border-bottom: 1px solid var(--uow-cool-grey-1);
+    text-align: left;
+}
+
+.dashboard-table th {
+    color: var(--uow-white);
+    background-color: var(--uow-purple);
+}
+
+.dashboard-table tbody tr:hover {
+    background-color: #f6edf7;
+}
+
+.dashboard-table tbody tr:last-child td {
+    border-bottom: 0;
+}

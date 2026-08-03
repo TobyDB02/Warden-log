@@ -1,56 +1,65 @@
+const { getPool, sql } = require('../config/db.js');
 
-const { getPool, sql } = require('../config/db');
-
-async function createEntry({ staffNumber, firstName, surname, location}) {
+exports.createEntry = async ({ staffNumber, firstName, surname, location }) => {
     const pool = await getPool();
+    const now = new Date();
+
     const result = await pool.request()
-        .input('staffNumber', sql.NVarChar, staffNumber)
-        .input('firstName', sql.NVarChar, firstName)
-        .input('surname', sql.NVarChar, surname)
-        .input('location', sql.NVarChar, location)
-        .query(`INSERT INTO FireWardenEntries (staffNumber, firstName, surname, location, timestamp, lastUpdated)
+        .input('staffNumber', sql.NVarChar(20), staffNumber)
+        .input('firstName', sql.NVarChar(50), firstName)
+        .input('surname', sql.NVarChar(50), surname)
+        .input('location', sql.NVarChar(100), location)
+        .input('timestamp', sql.DateTime, now)
+        .input('lastUpdated', sql.DateTime, now)
+        .query(`
+            INSERT INTO dbo.FireWardenEntries (staffNumber, firstName, surname, location, timestamp, lastUpdated)
                 OUTPUT INSERTED.*
-                VALUES (@staffNumber, @firstName, @surname, @location, GETDATE(), GETDATE())`
-        );
+            VALUES (@staffNumber, @firstName, @surname, @location, @timestamp, @lastUpdated)
+        `);
+
     return result.recordset[0];
-}
+};
 
-async function getAllEntries() {
-    const pool = await getPool();
-    const result = await pool.request().query(`SELECT * FROM FireWardenEntries ORDER BY lastUpdated DESC`);
-    return result.recordset;
-}
-
-async function getEntryByStaffNumber(staffNumber) {
+exports.getAllEntries = async () => {
     const pool = await getPool();
     const result = await pool.request()
-        .input('staffNumber', sql.NVarChar, staffNumber)
-        .query('SELECT * FROM FireWardenEntries WHERE staffNumber = @staffNumber');
-    return result.recordset[0];
-}
+        .query('SELECT * FROM dbo.FireWardenEntries');
 
-async function updateEntry(id, {location, firstName, surname}) {
+    return result.recordset;
+};
+
+exports.getEntryByStaffNumber = async (staffNumber) => {
     const pool = await getPool();
+    const result = await pool.request()
+        .input('staffNumber', sql.NVarChar(20), staffNumber)
+        .query('SELECT * FROM dbo.FireWardenEntries WHERE staffNumber = @staffNumber');
+
+    return result.recordset[0] || null;
+};
+
+exports.updateEntry = async (id, { firstName, surname, location }) => {
+    const pool = await getPool();
+    const now = new Date();
+
     const result = await pool.request()
         .input('id', sql.Int, id)
-        .input('location', sql.NVarChar, location)
-        .input('firstName', sql.NVarChar, firstName)
-        .input('surname', sql.NVarChar, surname)
+        .input('firstName', sql.NVarChar(50), firstName)
+        .input('surname', sql.NVarChar(50), surname)
+        .input('location', sql.NVarChar(100), location)
+        .input('lastUpdated', sql.DateTime, now)
         .query(`
-        UPDATE FireWardenEntries
-        SET location = @location, firstName = @firstName, surname = @surname, lastUpdated = GETDATE()
-        OUTPUT INSERTED.*
-        WHERE id = @id`
-        );
-    return result.recordset[0];
-}
+            UPDATE dbo.FireWardenEntries
+            SET firstName = @firstName, surname = @surname, location = @location, lastUpdated = @lastUpdated
+                OUTPUT INSERTED.*
+            WHERE id = @id
+        `);
 
-async function deleteEntry(id) {
+    return result.recordset[0] || null;
+};
+
+exports.deleteEntry = async (id) => {
     const pool = await getPool();
-    const result = await pool.request()
-        .input('id', sql.NVarChar, id)
-        .query('DELETE FROM FireWardenEntries WHERE id = @id');
-    return {deleted: true};
-}
-
-module.exports = {createEntry, getAllEntries, getEntryByStaffNumber, updateEntry, deleteEntry};
+    await pool.request()
+        .input('id', sql.Int, id)
+        .query('DELETE FROM dbo.FireWardenEntries WHERE id = @id');
+};

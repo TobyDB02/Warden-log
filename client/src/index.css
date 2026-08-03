@@ -1,33 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Raleway:wght@400;500;600;700&display=swap');
+
 :root {
   color-scheme: light;
+
+  --uow-purple: #7b2182;
+  --uow-orange: #ec6907;
+  --uow-green: #008f8b;
+  --uow-blue: #0080c2;
+  --uow-yellow: #fdc400;
+  --uow-cool-grey-1: #e2e2df;
+  --uow-cool-grey-2: #53565a;
+  --uow-black: #000000;
+  --uow-white: #ffffff;
+
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Raleway', Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  color-scheme: light only;
 }
 
 body {
+  min-width: 320px;
+  min-height: 100vh;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+
+  font-family: var(--font-body);
+  color: var(--uow-black);
+  background-color: #f6f6f4;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+button,
+input,
+select {
+  font: inherit;
 }
 
-html {
-  color-scheme: light only;
+button,
+input,
+select {
+  outline-offset: 3px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--uow-yellow);
 }
 
 select {
   color-scheme: light;
   -webkit-appearance: menulist;
-  color: #000 !important;
-  background-color: #fff !important;
+  color: var(--uow-black) !important;
+  background-color: var(--uow-white) !important;
 }
 
 option {
-  color: #000 !important;
-  background-color: #fff !important;
+  color: var(--uow-black) !important;
+  background-color: var(--uow-white) !important;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  monospace;
 }
