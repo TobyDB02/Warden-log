@@ -1,4 +1,10 @@
-module.exports = (err,req, res, next) => {
+module.exports = (err, req, res, next) => {
     console.error(err);
-    res.status(500).json({ error: err.message });
+
+    res.status(err.status || 500).json({
+        error:
+            err.status
+                ? err.message
+                : 'An unexpected error occurred'
+    });
 };

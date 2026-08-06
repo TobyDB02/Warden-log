@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import {
+    useEffect,
+    useState
+} from 'react';
+
 import {
     createEntry,
     deleteEntry,
-    getEntryByStaffNumber,
     getLocations,
     updateEntry
 } from '../api/entriesAPI';
@@ -13,35 +16,48 @@ const NAME_CHARACTERS_PATTERN =
 const COMPLETE_NAME_PATTERN =
     /^[\p{L}\p{M}]+(?:[ '’\-][\p{L}\p{M}]+)*$/u;
 
-function normaliseValue(value) {
-    return String(value ?? '')
-        .trim()
-        .toLocaleLowerCase('en-GB');
+function formatTime(isoString) {
+    if (!isoString) return '';
+
+    const date = new Date(isoString);
+
+    if (Number.isNaN(date.getTime())) {
+        return '';
+    }
+
+    return date.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
-export default function EntryForm({ onEntriesChanged }) {
+export default function EntryForm({
+                                      staffNumber,
+                                      initialEntry,
+                                      onEntriesChanged
+                                  }) {
     const [locations, setLocations] = useState([]);
-    const [staffNumber, setStaffNumber] = useState('');
     const [firstName, setFirstName] = useState('');
     const [surname, setSurname] = useState('');
     const [location, setLocation] = useState('');
-    const [existingEntry, setExistingEntry] = useState(null);
+    const [existingEntry, setExistingEntry] = useState(
+        initialEntry
+    );
     const [status, setStatus] = useState({
         type: '',
         message: ''
     });
     const [loading, setLoading] = useState(false);
 
-    const allFieldsComplete = Boolean(
-        staffNumber.trim() &&
-        firstName.trim() &&
-        surname.trim() &&
-        location
-    );
-
     useEffect(() => {
         getLocations()
-            .then(setLocations)
+            .then((data) => {
+                setLocations(
+                    Array.isArray(data)
+                        ? data
+                        : []
+                );
+            })
             .catch(() => {
                 setStatus({
                     type: 'error',
@@ -50,56 +66,42 @@ export default function EntryForm({ onEntriesChanged }) {
             });
     }, []);
 
-    async function handleLookup() {
-        const trimmedStaffNumber = staffNumber.trim();
+    useEffect(() => {
+        setExistingEntry(initialEntry);
 
-        if (!trimmedStaffNumber) return;
+        if (initialEntry) {
+            setFirstName(initialEntry.firstName ?? '');
+            setSurname(initialEntry.surname ?? '');
+            setLocation(initialEntry.location ?? '');
 
-        setStatus({
-            type: '',
-            message: ''
-        });
-
-        try {
-            const entry = await getEntryByStaffNumber(
-                trimmedStaffNumber
-            );
-
-            if (entry) {
-                setExistingEntry(entry);
-                setFirstName(entry.firstName);
-                setSurname(entry.surname);
-                setLocation(entry.location);
-
-                setStatus({
-                    type: 'info',
-                    message: `Amend existing entry: ${entry.firstName} ${entry.surname}`
-                });
-            } else {
-                setExistingEntry(null);
-                setFirstName('');
-                setSurname('');
-                setLocation('');
-
-                setStatus({
-                    type: 'info',
-                    message: 'Enter the staff member’s details'
-                });
-            }
-        } catch (error) {
             setStatus({
-                type: 'error',
-                message: error.message
+                type: 'info',
+                message:
+                    `Existing entry found for ${initialEntry.firstName} ${initialEntry.surname}`
+            });
+        } else {
+            setFirstName('');
+            setSurname('');
+            setLocation('');
+
+            setStatus({
+                type: 'info',
+                message: 'Enter your details to sign in'
             });
         }
-    }
+    }, [initialEntry]);
 
     async function handleSubmit(event) {
         event.preventDefault();
 
-        const trimmedStaffNumber = staffNumber.trim();
-        const trimmedFirstName = firstName.trim();
-        const trimmedSurname = surname.trim();
+        const trimmedStaffNumber =
+            String(staffNumber ?? '').trim();
+
+        const trimmedFirstName =
+            firstName.trim();
+
+        const trimmedSurname =
+            surname.trim();
 
         if (
             !trimmedStaffNumber ||
@@ -127,6 +129,7 @@ export default function EntryForm({ onEntriesChanged }) {
         }
 
         setLoading(true);
+
         setStatus({
             type: '',
             message: ''
@@ -145,9 +148,15 @@ export default function EntryForm({ onEntriesChanged }) {
 
                 setExistingEntry(updated);
 
+                const updatedTime = formatTime(
+                    updated?.lastUpdated
+                );
+
                 setStatus({
                     type: 'success',
-                    message: 'Your location has been updated'
+                    message: updatedTime
+                        ? `Updated at ${updatedTime}`
+                        : 'Your details have been updated'
                 });
             } else {
                 const created = await createEntry({
@@ -159,9 +168,15 @@ export default function EntryForm({ onEntriesChanged }) {
 
                 setExistingEntry(created);
 
+                const signedInTime = formatTime(
+                    created?.lastUpdated
+                );
+
                 setStatus({
                     type: 'success',
-                    message: 'Your location has been recorded'
+                    message: signedInTime
+                        ? `Signed in at ${signedInTime}`
+                        : 'Signed in successfully'
                 });
             }
 
@@ -176,50 +191,23 @@ export default function EntryForm({ onEntriesChanged }) {
         }
     }
 
-    async function handleDelete() {
+    async function handleSignOut() {
         if (!existingEntry) {
             setStatus({
                 type: 'error',
-                message: 'Please look up an existing entry first'
-            });
-            return;
-        }
-
-        if (!allFieldsComplete) {
-            setStatus({
-                type: 'error',
-                message:
-                    'Please complete all fields before deleting the entry'
-            });
-            return;
-        }
-
-        const detailsMatch =
-            normaliseValue(staffNumber) ===
-            normaliseValue(existingEntry.staffNumber) &&
-            normaliseValue(firstName) ===
-            normaliseValue(existingEntry.firstName) &&
-            normaliseValue(surname) ===
-            normaliseValue(existingEntry.surname) &&
-            normaliseValue(location) ===
-            normaliseValue(existingEntry.location);
-
-        if (!detailsMatch) {
-            setStatus({
-                type: 'error',
-                message:
-                    'The name, surname and location must match the existing entry before it can be deleted'
+                message: 'You are not currently signed in'
             });
             return;
         }
 
         const confirmed = window.confirm(
-            'Are you sure you want to delete this entry?'
+            `Sign out from ${existingEntry.location}?`
         );
 
         if (!confirmed) return;
 
         setLoading(true);
+
         setStatus({
             type: '',
             message: ''
@@ -229,14 +217,13 @@ export default function EntryForm({ onEntriesChanged }) {
             await deleteEntry(existingEntry.id);
 
             setExistingEntry(null);
-            setStaffNumber('');
             setFirstName('');
             setSurname('');
             setLocation('');
 
             setStatus({
                 type: 'success',
-                message: 'Entry deleted'
+                message: 'Signed out successfully'
             });
 
             onEntriesChanged?.();
@@ -252,25 +239,6 @@ export default function EntryForm({ onEntriesChanged }) {
 
     return (
         <div className="entry-form">
-            <h2>Fire Warden Check-in</h2>
-
-            <div className="field-group">
-                <label htmlFor="staffNumber">
-                    Staff Number:
-                </label>
-
-                <input
-                    id="staffNumber"
-                    type="text"
-                    value={staffNumber}
-                    onChange={(event) =>
-                        setStaffNumber(event.target.value)
-                    }
-                    onBlur={handleLookup}
-                    disabled={loading}
-                />
-            </div>
-
             <form onSubmit={handleSubmit}>
                 <div className="field-group">
                     <label htmlFor="firstName">
@@ -282,7 +250,8 @@ export default function EntryForm({ onEntriesChanged }) {
                         type="text"
                         value={firstName}
                         onChange={(event) => {
-                            const value = event.target.value;
+                            const value =
+                                event.target.value;
 
                             if (
                                 NAME_CHARACTERS_PATTERN.test(value)
@@ -305,7 +274,8 @@ export default function EntryForm({ onEntriesChanged }) {
                         type="text"
                         value={surname}
                         onChange={(event) => {
-                            const value = event.target.value;
+                            const value =
+                                event.target.value;
 
                             if (
                                 NAME_CHARACTERS_PATTERN.test(value)
@@ -327,7 +297,9 @@ export default function EntryForm({ onEntriesChanged }) {
                         id="location"
                         value={location}
                         onChange={(event) =>
-                            setLocation(event.target.value)
+                            setLocation(
+                                event.target.value
+                            )
                         }
                         disabled={loading}
                     >
@@ -352,21 +324,18 @@ export default function EntryForm({ onEntriesChanged }) {
                         disabled={loading}
                     >
                         {existingEntry
-                            ? 'Update Location'
-                            : 'Record Location'}
+                            ? 'Update'
+                            : 'Sign In'}
                     </button>
 
                     {existingEntry && (
                         <button
                             type="button"
-                            onClick={handleDelete}
-                            disabled={
-                                loading ||
-                                !allFieldsComplete
-                            }
+                            onClick={handleSignOut}
+                            disabled={loading}
                             className="delete-btn"
                         >
-                            Delete Entry
+                            Sign Out
                         </button>
                     )}
                 </div>

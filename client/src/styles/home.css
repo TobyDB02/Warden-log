@@ -14,6 +14,65 @@
     margin-left: 0;
 }
 
+.connection-screen,
+.login-screen {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border: 1px solid var(--uow-cool-grey-1);
+    border-radius: 12px;
+    text-align: center;
+    background-color: var(--uow-white);
+    box-shadow: 0 3px 12px rgb(0 0 0 / 10%);
+}
+
+.connection-screen h1,
+.login-screen h1 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--uow-purple);
+}
+
+.login-screen .home-introduction {
+    margin-bottom: 0;
+}
+
+.connection-screen p {
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+.login-form {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.login-form button {
+    width: 100%;
+}
+
+.active-staff-number {
+    max-width: 600px;
+    margin: 0 auto 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--uow-purple);
+}
+
+.page-navigation {
+    margin-bottom: 1.5rem;
+}
+
+.secondary-button {
+    color: var(--uow-purple);
+    background-color: var(--uow-white);
+}
+
+.secondary-button:hover:not(:disabled) {
+    color: var(--uow-white);
+    background-color: var(--uow-purple);
+}
+
 .dashboard {
     overflow-x: auto;
 }
@@ -30,7 +89,60 @@
     margin-bottom: 0;
 }
 
+.dashboard-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-filter__button {
+    min-height: 40px;
+    padding: 0.55rem 1rem;
+
+    color: var(--uow-purple);
+    background-color: var(--uow-white);
+}
+
+.dashboard-filter__button:hover:not(:disabled),
+.dashboard-filter__button.active {
+    color: var(--uow-white);
+    background-color: var(--uow-purple);
+}
+
+.coverage-status {
+    display: inline-block;
+    min-width: 90px;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.coverage-status--attended {
+    color: #006b67;
+    background-color: #e9f6f5;
+}
+
+.coverage-status--empty {
+    color: #b42318;
+    background-color: #fef3f2;
+}
+
+@media (max-width: 650px) {
+    .page-navigation .secondary-button {
+        width: 100%;
+    }
+}
+
 @media (max-width: 600px) {
+    .connection-screen,
+    .login-screen {
+        padding: 1.25rem;
+    }
+
     .dashboard-header {
         align-items: stretch;
         flex-direction: column;
@@ -40,7 +152,16 @@
         width: 100%;
     }
 
+    .dashboard-filter {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-filter__button {
+        width: 100%;
+    }
+
     .dashboard-table {
-        min-width: 650px;
+        min-width: 800px;
     }
 }

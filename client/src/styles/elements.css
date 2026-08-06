@@ -3,11 +3,7 @@ h2 {
     font-family: var(--font-heading);
 }
 
-.App-header h1,
-.App-header h2 {
-    color: var(--uow-white);
-}
-
+main h1,
 main h2 {
     margin-top: 0;
     color: var(--uow-purple);
@@ -65,18 +61,6 @@ button:hover:not(:disabled) {
 button:disabled {
     cursor: not-allowed;
     opacity: 0.6;
-}
-
-.App-header nav button {
-    color: var(--uow-white);
-    background-color: transparent;
-    border-color: var(--uow-white);
-}
-
-.App-header nav button:hover:not(:disabled),
-.App-header nav button.active {
-    color: var(--uow-purple);
-    background-color: var(--uow-white);
 }
 
 .delete-btn {

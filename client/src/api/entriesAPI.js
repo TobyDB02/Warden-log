@@ -1,51 +1,116 @@
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5005/api';
+const API_BASE =
+    process.env.REACT_APP_API_URL ||
+    'http://localhost:5005/api';
 
-async function handleResponse(res) {
-    if (!res.ok) {
-        const errorBody = await res.json().catch(() => ({}));
-        throw new Error(errorBody.error || `Request failed with status ${res.status}`);
+async function handleResponse(response) {
+    if (!response.ok) {
+        const errorBody = await response
+            .json()
+            .catch(() => ({}));
+
+        throw new Error(
+            errorBody.error ||
+            `Request failed with status ${response.status}`
+        );
     }
-    if (res.status === 204) return null;
-    return res.json();
+
+    if (response.status === 204) {
+        return null;
+    }
+
+    return response.json();
+}
+
+export async function checkServerHealth() {
+    const response = await fetch(
+        `${API_BASE}/health`,
+        {
+            cache: 'no-store'
+        }
+    );
+
+    return handleResponse(response);
+}
+
+export async function checkDatabaseHealth() {
+    const response = await fetch(
+        `${API_BASE}/health/database`,
+        {
+            cache: 'no-store'
+        }
+    );
+
+    return handleResponse(response);
 }
 
 export async function getLocations() {
-    const res = await fetch(`${API_BASE}/locations`);
-    return handleResponse(res)
+    const response = await fetch(
+        `${API_BASE}/locations`
+    );
+
+    return handleResponse(response);
 }
 
-export async function getAllEntries(){
-    const res = await fetch(`${API_BASE}/entries`);
-    return handleResponse(res)
+export async function getAllEntries() {
+    const response = await fetch(
+        `${API_BASE}/entries`
+    );
+
+    return handleResponse(response);
 }
 
 export async function getEntryByStaffNumber(staffNumber) {
-    const res = await fetch(`${API_BASE}/entries/${staffNumber}`);
-    if (res.status === 404) return null;
-    return handleResponse(res)
+    const encodedStaffNumber =
+        encodeURIComponent(staffNumber);
+
+    const response = await fetch(
+        `${API_BASE}/entries/${encodedStaffNumber}`
+    );
+
+    if (response.status === 404) {
+        return null;
+    }
+
+    return handleResponse(response);
 }
 
 export async function createEntry(entry) {
-    const res = await fetch(`${API_BASE}/entries`, {
-        method: 'POST',
-        headers: { 'Content-Type' : 'application/json' },
-        body: JSON.stringify(entry)
-    });
-    return handleResponse(res)
+    const response = await fetch(
+        `${API_BASE}/entries`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(entry)
+        }
+    );
+
+    return handleResponse(response);
 }
 
 export async function updateEntry(id, entry) {
-    const res = await fetch(`${API_BASE}/entries/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type' : 'application/json' },
-        body: JSON.stringify(entry)
-    });
-    return handleResponse(res)
+    const response = await fetch(
+        `${API_BASE}/entries/${id}`,
+        {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(entry)
+        }
+    );
+
+    return handleResponse(response);
 }
 
 export async function deleteEntry(id) {
-    const res = await fetch(`${API_BASE}/entries/${id}`, {
-        method: 'DELETE',
-    });
-    return handleResponse(res)
+    const response = await fetch(
+        `${API_BASE}/entries/${id}`,
+        {
+            method: 'DELETE'
+        }
+    );
+
+    return handleResponse(response);
 }
