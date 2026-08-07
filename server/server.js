@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const entriesRoutes = require('./routes/entriesRoutes');
 const errorHandler = require('./middleware/errorHandler');
@@ -43,6 +44,16 @@ app.get('/api/health/database', async (req, res) => {
 });
 
 app.use('/api', entriesRoutes);
+
+app.use(express.static(
+    path.join(__dirname, '../client/build')
+));
+
+app.get('/{*splat}', (req, res) => {
+    res.sendFile(
+        path.join(__dirname, '../client/build/index.html')
+    );
+});
 
 app.use(errorHandler);
 
