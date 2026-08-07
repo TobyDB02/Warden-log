@@ -59,7 +59,14 @@ exports.updateEntry = async (id, { firstName, surname, location }) => {
 
 exports.deleteEntry = async (id) => {
     const pool = await getPool();
-    await pool.request()
+
+    const result = await pool.request()
         .input('id', sql.Int, id)
-        .query('DELETE FROM dbo.FireWardenEntries WHERE id = @id');
+        .query(`
+            DELETE FROM dbo.FireWardenEntries
+            OUTPUT DELETED.*
+            WHERE id = @id
+        `);
+
+    return result.recordset[0] || null;
 };
