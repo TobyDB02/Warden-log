@@ -1,6 +1,6 @@
 const API_BASE =
     process.env.REACT_APP_API_URL ||
-    'http:/api';
+    '/api';
 
 async function handleResponse(response) {
     if (!response.ok) {
